@@ -142,3 +142,230 @@
       border: none;
       border-radius: 4px;
       font-size: 16px;
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pictus 게시글 피드 + 댓글 기능</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    .feed { max-width: 600px; margin: 20px auto 0; }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      overflow: hidden;
+      padding-bottom: 10px;
+    }
+    .card img { width: 100%; height: auto; display: block; }
+    .card-content { padding: 15px; }
+    .card-title { font-size: 18px; font-weight: bold; margin: 0 0 10px; }
+    .card-desc { font-size: 14px; color: #555; margin: 0 0 10px; }
+    .comments {
+      padding: 0 15px 10px 15px;
+      border-top: 1px solid #eee;
+    }
+    .comment {
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #333;
+    }
+    .comment strong {
+      margin-right: 6px;
+    }
+    .comment-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .comment-form input {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .comment-form button {
+      padding: 6px 12px;
+      font-size: 13px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .comment-form button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Pictus 게시글 작성 & 댓글</h1>
+
+  <form id="postForm" style="max-width:600px; margin:0 auto 30px; background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+    <input type="text" id="title" placeholder="제목" required />
+    <input type="text" id="imageUrl" placeholder="이미지 URL" required />
+    <textarea id="description" placeholder="내용" required></textarea>
+    <button type="submit">게시글 올리기</button>
+  </form>
+
+  <div class="feed" id="feed">
+    <!-- 게시글 카드가 여기 들어감 -->
+  </div>
+
+  <script>
+    const posts = [
+      {
+        id: 1,
+        title: "축구 짤 - 골 장면!",
+        description: "최고의 골 장면을 모아봤어요.",
+        imageUrl: "https://via.placeholder.com/600x300?text=Goal+Scene",
+        comments: [
+          { name: "철수", text: "와 멋진 골이다!" },
+          { name: "영희", text: "다시봐도 감탄!" }
+        ],
+      },
+      {
+        id: 2,
+        title: "오늘의 유머",
+        description: "웃음이 빵 터지는 유머 모음입니다.",
+        imageUrl: "https://via.placeholder.com/600x300?text=Funny+Joke",
+        comments: [],
+      },
+      {
+        id: 3,
+        title: "자유 게시판 오픈!",
+        description: "편하게 이야기 나누는 공간입니다.",
+        imageUrl: "https://via.placeholder.com/600x300?text=Free+Board",
+        comments: [],
+      }
+    ];
+
+    const feed = document.getElementById("feed");
+    const postForm = document.getElementById("postForm");
+
+    function createCard(post) {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const img = document.createElement("img");
+      img.src = post.imageUrl;
+      img.alt = post.title;
+
+      const content = document.createElement("div");
+      content.className = "card-content";
+
+      const title = document.createElement("h2");
+      title.className = "card-title";
+      title.textContent = post.title;
+
+      const desc = document.createElement("p");
+      desc.className = "card-desc";
+      desc.textContent = post.description;
+
+      content.appendChild(title);
+      content.appendChild(desc);
+      card.appendChild(img);
+      card.appendChild(content);
+
+      // 댓글 영역
+      const commentsDiv = document.createElement("div");
+      commentsDiv.className = "comments";
+
+      const commentsTitle = document.createElement("strong");
+      commentsTitle.textContent = "댓글";
+
+      commentsDiv.appendChild(commentsTitle);
+
+      // 댓글 목록
+      post.comments.forEach(comment => {
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comment";
+        commentDiv.innerHTML = `<strong>${comment.name}:</strong> ${comment.text}`;
+        commentsDiv.appendChild(commentDiv);
+      });
+
+      // 댓글 작성 폼
+      const commentForm = document.createElement("form");
+      commentForm.className = "comment-form";
+
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.placeholder = "이름";
+      nameInput.required = true;
+
+      const textInput = document.createElement("input");
+      textInput.type = "text";
+      textInput.placeholder = "댓글 작성";
+      textInput.required = true;
+
+      const submitBtn = document.createElement("button");
+      submitBtn.type = "submit";
+      submitBtn.textContent = "등록";
+
+      commentForm.appendChild(nameInput);
+      commentForm.appendChild(textInput);
+      commentForm.appendChild(submitBtn);
+      commentsDiv.appendChild(commentForm);
+
+      commentForm.addEventListener("submit", e => {
+        e.preventDefault();
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+        if (!name || !text) return;
+
+        // 댓글 배열에 추가
+        post.comments.push({ name, text });
+
+        // 댓글 화면에 바로 추가
+        const newCommentDiv = document.createElement("div");
+        newCommentDiv.className = "comment";
+        newCommentDiv.innerHTML = `<strong>${name}:</strong> ${text}`;
+        commentsDiv.insertBefore(newCommentDiv, commentForm);
+
+        // 입력 초기화
+        nameInput.value = "";
+        textInput.value = "";
+      });
+
+      card.appendChild(commentsDiv);
+
+      return card;
+    }
+
+    function renderFeed() {
+      feed.innerHTML = "";
+      posts.forEach(post => {
+        const card = createCard(post);
+        feed.appendChild(card);
+      });
+    }
+
+    postForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const imageUrl = document.getElementById("imageUrl").value.trim();
+      const description = document.getElementById("description").value.trim();
+
+      if(title && imageUrl && description) {
+        const newPost = {
+          id: posts.length + 1,
+          title,
+          imageUrl,
+          description,
+          comments: []
+        };
+
+        posts.unshift(newPost); // 새 글 맨 위 추가
+        renderFeed();
+
+        postForm.reset();
+      }
+    });
+
+    renderFeed();
+  </script>
+</body>
+</html>
