@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>Pictus 게시글 피드 + 작성 + 댓글</title>
+  <title>Pictus 커뮤니티 - 축구 동영상 포함</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
     h1 { text-align: center; margin-bottom: 30px; }
@@ -15,10 +15,15 @@
       overflow: hidden;
       padding-bottom: 10px;
     }
-    .card img { width: 100%; height: auto; display: block; }
     .card-content { padding: 15px; }
     .card-title { font-size: 18px; font-weight: bold; margin: 0 0 10px; }
     .card-desc { font-size: 14px; color: #555; margin: 0 0 10px; }
+    video {
+      width: 100%;
+      max-height: 340px;
+      display: block;
+      background: black;
+    }
     form#postForm {
       max-width: 600px;
       margin: 0 auto 30px;
@@ -95,11 +100,11 @@
   </style>
 </head>
 <body>
-  <h1>Pictus 게시글 작성 & 댓글</h1>
+  <h1>Pictus 커뮤니티 - 축구 동영상 게시판</h1>
 
   <form id="postForm">
     <input type="text" id="title" placeholder="제목" required />
-    <input type="text" id="imageUrl" placeholder="이미지 URL" required />
+    <input type="text" id="videoUrl" placeholder="동영상 URL (MP4 형식 권장)" required />
     <textarea id="description" placeholder="내용" rows="4" required></textarea>
     <button type="submit">게시글 올리기</button>
   </form>
@@ -107,34 +112,21 @@
   <div class="feed" id="feed"></div>
 
   <script>
-    // 초기 게시글 + 축구 골 장면 + 손흥민 감아차기 포함
+    // 초기 게시글: 축구 동영상 포함 (YouTube 영상 직접 넣으면 안 되니, MP4 직접 링크로 사용하거나 호스팅 필요)
+    // 예시는 공개된 MP4 영상 링크 사용 (실제 서비스에는 저작권 확인 필요)
     const posts = [
       {
         id: 1,
-        title: "멋진 축구 골 장면!",
-        description: "이번 시즌 최고의 골 모음입니다.",
-        imageUrl: "https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?auto=format&fit=crop&w=600&q=80",
+        title: "손흥민의 감아차기 골",
+        description: "월드컵 예선전에서 손흥민 선수가 보여준 멋진 감아차기 골 영상입니다.",
+        videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm", // 예시 영상 (대체용)
         comments: []
       },
       {
         id: 2,
-        title: "드리블 명장면",
-        description: "환상적인 드리블 장면들을 모았어요.",
-        imageUrl: "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=600&q=80",
-        comments: []
-      },
-      {
-        id: 3,
-        title: "멋진 헤딩 슛!",
-        description: "완벽한 헤딩 슛을 모아봤습니다.",
-        imageUrl: "https://images.unsplash.com/photo-1517927033932-b2d87734fdaa?auto=format&fit=crop&w=600&q=80",
-        comments: []
-      },
-      {
-        id: 4,
-        title: "손흥민의 감아차기 골 🇰🇷",
-        description: "싱가포르와의 월드컵 예선전에서 손흥민 선수가 보여준 환상적인 감아차기 골!",
-        imageUrl: "https://media.spurs-web.com/wp-content/uploads/2023/11/Heung-min-Son-curls-in-a-peach-for-South-Korea.jpg",
+        title: "멋진 축구 하이라이트",
+        description: "축구 경기 하이라이트 모음입니다.",
+        videoUrl: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/bee.webm", // 예시 영상 (대체용)
         comments: []
       }
     ];
@@ -146,9 +138,11 @@
       const card = document.createElement("div");
       card.className = "card";
 
-      const img = document.createElement("img");
-      img.src = post.imageUrl;
-      img.alt = post.title;
+      // 동영상 요소
+      const video = document.createElement("video");
+      video.src = post.videoUrl;
+      video.controls = true;
+      video.alt = post.title;
 
       const content = document.createElement("div");
       content.className = "card-content";
@@ -163,7 +157,8 @@
 
       content.appendChild(title);
       content.appendChild(desc);
-      card.appendChild(img);
+
+      card.appendChild(video);
       card.appendChild(content);
 
       // 댓글 영역
@@ -242,14 +237,14 @@
       e.preventDefault();
 
       const title = document.getElementById("title").value.trim();
-      const imageUrl = document.getElementById("imageUrl").value.trim();
+      const videoUrl = document.getElementById("videoUrl").value.trim();
       const description = document.getElementById("description").value.trim();
 
-      if(title && imageUrl && description) {
+      if(title && videoUrl && description) {
         const newPost = {
           id: posts.length + 1,
           title,
-          imageUrl,
+          videoUrl,
           description,
           comments: []
         };
