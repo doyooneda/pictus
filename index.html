@@ -2,9 +2,10 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>Pictus 게시글 피드 + 댓글 기능</title>
+  <title>Pictus 게시글 피드 + 작성 + 댓글</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 30px; }
     .feed { max-width: 600px; margin: 20px auto 0; }
     .card {
       background: white;
@@ -18,9 +19,45 @@
     .card-content { padding: 15px; }
     .card-title { font-size: 18px; font-weight: bold; margin: 0 0 10px; }
     .card-desc { font-size: 14px; color: #555; margin: 0 0 10px; }
+    form#postForm {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    form#postForm input, form#postForm textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    form#postForm button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    form#postForm button:hover {
+      background-color: #0056b3;
+    }
     .comments {
       padding: 0 15px 10px 15px;
       border-top: 1px solid #eee;
+    }
+    .comments > strong {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
     }
     .comment {
       margin-bottom: 8px;
@@ -50,6 +87,7 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
     .comment-form button:hover {
       background-color: #0056b3;
@@ -57,44 +95,47 @@
   </style>
 </head>
 <body>
-  <h1 style="text-align:center;">Pictus 게시글 작성 & 댓글</h1>
+  <h1>Pictus 게시글 작성 & 댓글</h1>
 
-  <form id="postForm" style="max-width:600px; margin:0 auto 30px; background:#fff; padding:15px; border-radius:8px; box-shadow:0 2px 5px rgba(0,0,0,0.1);">
+  <form id="postForm">
     <input type="text" id="title" placeholder="제목" required />
     <input type="text" id="imageUrl" placeholder="이미지 URL" required />
-    <textarea id="description" placeholder="내용" required></textarea>
+    <textarea id="description" placeholder="내용" rows="4" required></textarea>
     <button type="submit">게시글 올리기</button>
   </form>
 
-  <div class="feed" id="feed">
-    <!-- 게시글 카드가 여기 들어감 -->
-  </div>
+  <div class="feed" id="feed"></div>
 
   <script>
+    // 초기 게시글 + 축구 골 장면 + 손흥민 감아차기 포함
     const posts = [
       {
         id: 1,
-        title: "축구 짤 - 골 장면!",
-        description: "최고의 골 장면을 모아봤어요.",
-        imageUrl: "https://via.placeholder.com/600x300?text=Goal+Scene",
-        comments: [
-          { name: "철수", text: "와 멋진 골이다!" },
-          { name: "영희", text: "다시봐도 감탄!" }
-        ],
+        title: "멋진 축구 골 장면!",
+        description: "이번 시즌 최고의 골 모음입니다.",
+        imageUrl: "https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?auto=format&fit=crop&w=600&q=80",
+        comments: []
       },
       {
         id: 2,
-        title: "오늘의 유머",
-        description: "웃음이 빵 터지는 유머 모음입니다.",
-        imageUrl: "https://via.placeholder.com/600x300?text=Funny+Joke",
-        comments: [],
+        title: "드리블 명장면",
+        description: "환상적인 드리블 장면들을 모았어요.",
+        imageUrl: "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=600&q=80",
+        comments: []
       },
       {
         id: 3,
-        title: "자유 게시판 오픈!",
-        description: "편하게 이야기 나누는 공간입니다.",
-        imageUrl: "https://via.placeholder.com/600x300?text=Free+Board",
-        comments: [],
+        title: "멋진 헤딩 슛!",
+        description: "완벽한 헤딩 슛을 모아봤습니다.",
+        imageUrl: "https://images.unsplash.com/photo-1517927033932-b2d87734fdaa?auto=format&fit=crop&w=600&q=80",
+        comments: []
+      },
+      {
+        id: 4,
+        title: "손흥민의 감아차기 골 🇰🇷",
+        description: "싱가포르와의 월드컵 예선전에서 손흥민 선수가 보여준 환상적인 감아차기 골!",
+        imageUrl: "https://media.spurs-web.com/wp-content/uploads/2023/11/Heung-min-Son-curls-in-a-peach-for-South-Korea.jpg",
+        comments: []
       }
     ];
 
@@ -131,7 +172,6 @@
 
       const commentsTitle = document.createElement("strong");
       commentsTitle.textContent = "댓글";
-
       commentsDiv.appendChild(commentsTitle);
 
       // 댓글 목록
@@ -225,40 +265,3 @@
   </script>
 </body>
 </html>
-{
-  id: 4,
-  title: "손흥민의 감아차기 골 🇰🇷",
-  description: "싱가포르와의 월드컵 예선전에서 손흥민 선수가 보여준 환상적인 감아차기 골!",
-  imageUrl: "https://media.spurs-web.com/wp-content/uploads/2023/11/Heung-min-Son-curls-in-a-peach-for-South-Korea.jpg",
-  comments: []
-}
-const posts = [
-  {
-    id: 1,
-    title: "멋진 축구 골 장면!",
-    description: "이번 시즌 최고의 골 모음입니다.",
-    imageUrl: "https://images.unsplash.com/photo-1505678261036-a3fcc5e884ee?auto=format&fit=crop&w=600&q=80",
-    comments: []
-  },
-  {
-    id: 2,
-    title: "드리블 명장면",
-    description: "환상적인 드리블 장면들을 모았어요.",
-    imageUrl: "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?auto=format&fit=crop&w=600&q=80",
-    comments: []
-  },
-  {
-    id: 3,
-    title: "멋진 헤딩 슛!",
-    description: "완벽한 헤딩 슛을 모아봤습니다.",
-    imageUrl: "https://images.unsplash.com/photo-1517927033932-b2d87734fdaa?auto=format&fit=crop&w=600&q=80",
-    comments: []
-  },
-  {
-    id: 4,
-    title: "손흥민의 감아차기 골 🇰🇷",
-    description: "싱가포르와의 월드컵 예선전에서 손흥민 선수가 보여준 환상적인 감아차기 골!",
-    imageUrl: "https://media.spurs-web.com/wp-content/uploads/2023/11/Heung-min-Son-curls-in-a-peach-for-South-Korea.jpg",
-    comments: []
-  }
-];
