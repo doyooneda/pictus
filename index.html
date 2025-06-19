@@ -260,3 +260,250 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pictus 축구 커뮤니티 - 동영상 포함</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    h1 { text-align: center; margin-bottom: 30px; }
+    .feed { max-width: 600px; margin: 20px auto 0; }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+      overflow: hidden;
+      padding-bottom: 10px;
+    }
+    .card-content { padding: 15px; }
+    .card-title { font-size: 18px; font-weight: bold; margin: 0 0 10px; }
+    .card-desc { font-size: 14px; color: #555; margin: 0 0 10px; }
+    iframe {
+      width: 100%;
+      height: 315px;
+      border: none;
+      border-radius: 8px 8px 0 0;
+    }
+    form#postForm {
+      max-width: 600px;
+      margin: 0 auto 30px;
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    form#postForm input, form#postForm textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    form#postForm button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    form#postForm button:hover {
+      background-color: #0056b3;
+    }
+    .comments {
+      padding: 0 15px 10px 15px;
+      border-top: 1px solid #eee;
+    }
+    .comments > strong {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    .comment {
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #333;
+    }
+    .comment strong {
+      margin-right: 6px;
+    }
+    .comment-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .comment-form input {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .comment-form button {
+      padding: 6px 12px;
+      font-size: 13px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .comment-form button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pictus 커뮤니티 - 축구 동영상 게시판</h1>
+
+  <form id="postForm">
+    <input type="text" id="title" placeholder="제목" required />
+    <input type="text" id="videoUrl" placeholder="유튜브 영상 ID (ex: qPLnNpRdF_o)" required />
+    <textarea id="description" placeholder="내용" rows="4" required></textarea>
+    <button type="submit">게시글 올리기</button>
+  </form>
+
+  <div class="feed" id="feed"></div>
+
+  <script>
+    const posts = [
+      {
+        id: 1,
+        title: "손흥민 감아차기 골",
+        description: "손흥민 선수의 멋진 감아차기 골 영상입니다.",
+        videoId: "qPLnNpRdF_o",  // 예시 유튜브 영상 ID
+        comments: []
+      }
+    ];
+
+    const feed = document.getElementById("feed");
+    const postForm = document.getElementById("postForm");
+
+    function createCard(post) {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube.com/embed/${post.videoId}`;
+      iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+
+      const content = document.createElement("div");
+      content.className = "card-content";
+
+      const title = document.createElement("h2");
+      title.className = "card-title";
+      title.textContent = post.title;
+
+      const desc = document.createElement("p");
+      desc.className = "card-desc";
+      desc.textContent = post.description;
+
+      content.appendChild(title);
+      content.appendChild(desc);
+
+      card.appendChild(iframe);
+      card.appendChild(content);
+
+      const commentsDiv = document.createElement("div");
+      commentsDiv.className = "comments";
+
+      const commentsTitle = document.createElement("strong");
+      commentsTitle.textContent = "댓글";
+      commentsDiv.appendChild(commentsTitle);
+
+      post.comments.forEach(comment => {
+        const commentDiv = document.createElement("div");
+        commentDiv.className = "comment";
+        commentDiv.innerHTML = `<strong>${comment.name}:</strong> ${comment.text}`;
+        commentsDiv.appendChild(commentDiv);
+      });
+
+      const commentForm = document.createElement("form");
+      commentForm.className = "comment-form";
+
+      const nameInput = document.createElement("input");
+      nameInput.type = "text";
+      nameInput.placeholder = "이름";
+      nameInput.required = true;
+
+      const textInput = document.createElement("input");
+      textInput.type = "text";
+      textInput.placeholder = "댓글 작성";
+      textInput.required = true;
+
+      const submitBtn = document.createElement("button");
+      submitBtn.type = "submit";
+      submitBtn.textContent = "등록";
+
+      commentForm.appendChild(nameInput);
+      commentForm.appendChild(textInput);
+      commentForm.appendChild(submitBtn);
+
+      commentsDiv.appendChild(commentForm);
+
+      commentForm.addEventListener("submit", e => {
+        e.preventDefault();
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+        if (!name || !text) return;
+
+        post.comments.push({ name, text });
+
+        const newCommentDiv = document.createElement("div");
+        newCommentDiv.className = "comment";
+        newCommentDiv.innerHTML = `<strong>${name}:</strong> ${text}`;
+        commentsDiv.insertBefore(newCommentDiv, commentForm);
+
+        nameInput.value = "";
+        textInput.value = "";
+      });
+
+      card.appendChild(commentsDiv);
+
+      return card;
+    }
+
+    function renderFeed() {
+      feed.innerHTML = "";
+      posts.forEach(post => {
+        const card = createCard(post);
+        feed.appendChild(card);
+      });
+    }
+
+    postForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const videoId = document.getElementById("videoUrl").value.trim();
+      const description = document.getElementById("description").value.trim();
+
+      if(title && videoId && description) {
+        const newPost = {
+          id: posts.length + 1,
+          title,
+          videoId,
+          description,
+          comments: []
+        };
+
+        posts.unshift(newPost);
+        renderFeed();
+
+        postForm.reset();
+      }
+    });
+
+    renderFeed();
+  </script>
+</body>
+</html>
