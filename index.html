@@ -10,3 +10,91 @@
   <p>여기에 이미지 + 텍스트 업로드 기능이 곧 생깁니다!</p>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pictus 게시글 피드</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
+    .feed { max-width: 600px; margin: 0 auto; }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .card img { width: 100%; height: auto; display: block; }
+    .card-content { padding: 15px; }
+    .card-title { font-size: 18px; font-weight: bold; margin: 0 0 10px; }
+    .card-desc { font-size: 14px; color: #555; margin: 0; }
+  </style>
+</head>
+<body>
+  <h1>Pictus 게시글 피드</h1>
+  <div class="feed" id="feed">
+    <!-- 게시글 카드가 여기 들어감 -->
+  </div>
+
+  <script>
+    // 예시 게시글 데이터 배열
+    const posts = [
+      {
+        id: 1,
+        title: "축구 짤 - 골 장면!",
+        description: "최고의 골 장면을 모아봤어요.",
+        imageUrl: "https://via.placeholder.com/600x300?text=Goal+Scene"
+      },
+      {
+        id: 2,
+        title: "오늘의 유머",
+        description: "웃음이 빵 터지는 유머 모음입니다.",
+        imageUrl: "https://via.placeholder.com/600x300?text=Funny+Joke"
+      },
+      {
+        id: 3,
+        title: "자유 게시판 오픈!",
+        description: "편하게 이야기 나누는 공간입니다.",
+        imageUrl: "https://via.placeholder.com/600x300?text=Free+Board"
+      }
+    ];
+
+    const feed = document.getElementById("feed");
+
+    // 게시글 카드 생성 함수
+    function createCard(post) {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const img = document.createElement("img");
+      img.src = post.imageUrl;
+      img.alt = post.title;
+
+      const content = document.createElement("div");
+      content.className = "card-content";
+
+      const title = document.createElement("h2");
+      title.className = "card-title";
+      title.textContent = post.title;
+
+      const desc = document.createElement("p");
+      desc.className = "card-desc";
+      desc.textContent = post.description;
+
+      content.appendChild(title);
+      content.appendChild(desc);
+      card.appendChild(img);
+      card.appendChild(content);
+
+      return card;
+    }
+
+    // 모든 게시글 카드 피드에 추가
+    posts.forEach(post => {
+      const card = createCard(post);
+      feed.appendChild(card);
+    });
+  </script>
+</body>
+</html>
